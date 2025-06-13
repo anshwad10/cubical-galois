@@ -1,9 +1,14 @@
+{-# OPTIONS --safe #-}
+
 module HeytingField.Properties where
 
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Function
 open import Cubical.Foundations.Powerset using (ℙ; _∈_)
 open import Cubical.Foundations.Equiv
+open import Cubical.Foundations.Structure
+
+open import Cubical.Functions.Embedding
 
 open import Cubical.Relation.Nullary
 
@@ -19,6 +24,7 @@ open import HeytingField.Base
 
 private variable
   ℓ ℓ' ℓ'' ℓ''' : Level
+  F G H : HeytingField ℓ ℓ'
 
 module FieldTheory ((R , F) : HeytingField ℓ ℓ') where
   open HeytingFieldStr F public
@@ -116,6 +122,17 @@ module _ {A : Type ℓ} {B : Type ℓ'} {F : HeytingFieldStr ℓ'' A} {G : Heyti
     makeIsFieldHom : IsHeytingFieldHom F f G
     makeIsFieldHom = strongExtRingHomIsFieldHom _ _ f (makeIsRingHom pres1 pres+ pres·) strongExt
 
+module _ {F : HeytingField ℓ ℓ''} {G : HeytingField ℓ' ℓ'''} (f : ⟨ F ⟩ → ⟨ G ⟩) where
+  private
+    module F = FieldTheory F
+    module G = FieldTheory G
+  
+  module _ (pres+ : ∀ x y → f (x F.+ y) ≡ f x G.+ f y) (pres1 : f F.1r ≡ G.1r)
+           (pres· : ∀ x y → f (x F.· y) ≡ f x G.· f y) (strongExt : ∀ x y → f x G.# f y → x F.# y) where
+    
+    makeFieldHom : HeytingFieldHom F G
+    makeFieldHom = f , makeIsFieldHom pres+ pres1 pres· strongExt
+
 -- Although not every ring homomorphism is a field homomorphism, every ring equivalence is an equivalence of fields:
 module _ {A : Type ℓ} {B : Type ℓ'} {F : HeytingFieldStr ℓ'' A} (e : A ≃ B) {G : HeytingFieldStr ℓ''' B}
          (eIsRingEquiv : IsRingEquiv (HeytingFieldStr→RingStr F) e (HeytingFieldStr→RingStr G)) where
@@ -142,3 +159,17 @@ module _ {F : HeytingField ℓ ℓ''} {G : HeytingField ℓ' ℓ'''} where
 
   isEquivHeytingFieldEquiv→RingEquiv : isEquiv (HeytingFieldEquiv→RingEquiv F G)
   isEquivHeytingFieldEquiv→RingEquiv = FieldEquiv≃RingEquiv .snd
+
+open RingHoms
+open IsHeytingFieldHom
+
+idFieldHom : HeytingFieldHom F F
+idFieldHom = _ , strongExtRingHomIsFieldHom _ _ _ (idRingHom _ .snd) λ _ _ → idfun _
+
+compFieldHom : HeytingFieldHom F G → HeytingFieldHom G H → HeytingFieldHom F H
+compFieldHom f g = _ , strongExtRingHomIsFieldHom _ _ _ 
+  (compIsRingHom (HeytingFieldHom→RingHom _ _ g .snd) (HeytingFieldHom→RingHom _ _ f .snd)) λ x y x#y →
+    invEq (f .snd .pres# _ _) (invEq (g .snd .pres# _ _) x#y)
+
+Subfield : ∀ (F : HeytingField ℓ ℓ'') ℓ' → Type (ℓ-max (ℓ-max ℓ (ℓ-suc ℓ'')) (ℓ-suc ℓ'))
+Subfield {ℓ'' = ℓ''} F ℓ' = Σ[ H ∈ HeytingField ℓ' ℓ'' ] HeytingFieldHom H F

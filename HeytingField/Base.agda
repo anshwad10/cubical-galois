@@ -1,3 +1,5 @@
+{-# OPTIONS --safe #-}
+
 module HeytingField.Base where
 
 open import Cubical.Foundations.Prelude

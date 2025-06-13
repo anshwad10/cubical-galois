@@ -1,4 +1,4 @@
 name: cubical-galois
 include: .
 depend: cubical-0.7
-flags: --safe --cubical --no-import-sorts -WnoUnsupportedIndexedMatch
+flags: --cubical --no-import-sorts -WnoUnsupportedIndexedMatch
