@@ -17,19 +17,18 @@ private variable
   F G H : HeytingField ℓ ℓ'
   E E' E'' : FieldExtension F ℓ'' ℓ'''
 
-module _ (F : HeytingField ℓ ℓ') ((E , F→E , _) : FieldExtension F ℓ'' ℓ''') ((E' , F→E' , _) : FieldExtension F ℓ'''' ℓ''''') where
-  record IsExtensionHom (f : ⟨ E ⟩ → ⟨ E' ⟩): Type (ℓ-max ℓ ℓ'''') where
+module _ (F : HeytingField ℓ ℓ') ((E , F→E , F→EisHom) : FieldExtension F ℓ'' ℓ''') ((E' , F→E' , _) : FieldExtension F ℓ'''' ℓ''''') where
+  record IsExtensionHom (f : HeytingFieldHom E E'): Type (ℓ-max ℓ ℓ'''') where
+    constructor makeIsExtensionHom
     field
-      presInc : ∀ x → f (F→E x) ≡ F→E' x
+      presInc : ∀ x → f .fst (F→E x) ≡ F→E' x
+    open IsHeytingFieldHom (snd f) public
 
   ExtensionHom : Type (ℓ-max (ℓ-max (ℓ-max (ℓ-max ℓ ℓ'') ℓ''') ℓ'''') ℓ''''')
-  ExtensionHom = Σ[ f ∈ HeytingFieldHom E E' ] IsExtensionHom (f .fst)
+  ExtensionHom = Σ[ f ∈ HeytingFieldHom E E' ] IsExtensionHom f
 
   ExtensionEquiv : Type (ℓ-max (ℓ-max (ℓ-max (ℓ-max ℓ ℓ'') ℓ''') ℓ'''') ℓ''''')
-  ExtensionEquiv = Σ[ f ∈ HeytingFieldEquiv E E' ] IsExtensionHom (f .fst .fst)
-
-Subextension : ∀ (F : HeytingField ℓ ℓ') (E : FieldExtension F ℓ'' ℓ''') ℓ'''' → Type (ℓ-max (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) ℓ''') (ℓ-suc ℓ''''))
-Subextension {ℓ'' = ℓ''} F E ℓ'''' = Σ[ L ∈ FieldExtension F ℓ'' ℓ'''' ] ExtensionHom F L E
+  ExtensionEquiv = Σ[ f ∈ HeytingFieldEquiv E E' ] IsExtensionHom (f .fst .fst , f .snd)
 
 idExtensionEquiv : ExtensionEquiv F E E
 idExtensionEquiv = {!   !}
@@ -55,4 +54,3 @@ ExtensionSymGroup F E = _ , ExtensionSymGroupStr F E
 GaloisGroup : (F : HeytingField ℓ ℓ') (E : GaloisExtension F ℓ'' ℓ''')
             → Group (ℓ-max (ℓ-max ℓ ℓ'') ℓ''')
 GaloisGroup F E = ExtensionSymGroup F (GaloisExtension→Extension E)
-

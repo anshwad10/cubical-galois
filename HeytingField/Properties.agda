@@ -170,6 +170,3 @@ compFieldHom : HeytingFieldHom F G → HeytingFieldHom G H → HeytingFieldHom F
 compFieldHom f g = _ , strongExtRingHomIsFieldHom _ _ _ 
   (compIsRingHom (HeytingFieldHom→RingHom _ _ g .snd) (HeytingFieldHom→RingHom _ _ f .snd)) λ x y x#y →
     invEq (f .snd .pres# _ _) (invEq (g .snd .pres# _ _) x#y)
-
-Subfield : ∀ (F : HeytingField ℓ ℓ'') ℓ' → Type (ℓ-max (ℓ-max ℓ (ℓ-suc ℓ'')) (ℓ-suc ℓ'))
-Subfield {ℓ'' = ℓ''} F ℓ' = Σ[ H ∈ HeytingField ℓ' ℓ'' ] HeytingFieldHom H F

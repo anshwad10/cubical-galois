@@ -24,19 +24,13 @@ module _ {F : HeytingField ℓ ℓ'} (E : FieldExtension F ℓ'' ℓ''') where
   IsGaloisExtension = {!   !}
 
 SeparableExtension : ∀ (F : HeytingField ℓ ℓ') ℓ'' ℓ''' → Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
-SeparableExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ]
-                                Σ[ F→E ∈ HeytingFieldHom F E ]
-                                IsSeparableExtension (E , F→E)
+SeparableExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ] Σ[ F→E ∈ HeytingFieldHom F E ] IsSeparableExtension (E , F→E)
 
 AlgebraicExtension : ∀ (F : HeytingField ℓ ℓ') ℓ'' ℓ''' → Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
-AlgebraicExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ]
-                                Σ[ F→E ∈ HeytingFieldHom F E ]
-                                IsAlgebraicExtension (E , F→E)
+AlgebraicExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ] Σ[ F→E ∈ HeytingFieldHom F E ] IsAlgebraicExtension (E , F→E)
 
 GaloisExtension : ∀ (F : HeytingField ℓ ℓ') ℓ'' ℓ''' → Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
-GaloisExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ]
-                                Σ[ F→E ∈ HeytingFieldHom F E ]
-                                IsGaloisExtension (E , F→E)
+GaloisExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ] Σ[ F→E ∈ HeytingFieldHom F E ] IsGaloisExtension (E , F→E)
 
 GaloisExtension→Extension : GaloisExtension F ℓ'' ℓ''' → FieldExtension F ℓ'' ℓ'''
 GaloisExtension→Extension (E , F→E , _) = (E , F→E)
