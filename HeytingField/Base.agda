@@ -52,6 +52,9 @@ record IsHeytingField {R : Type ℓ} (0r 1r : R) (_+_ _·_ : R → R → R) (-_ 
   isLInvRecip : ∀ x (p : x # 0r) → recip x p · x ≡ 1r
   isLInvRecip x p = ·Comm _ _ ∙ isRInvRecip x p
 
+  IsInv→#0' : ∀ x → (Σ[ y ∈ R ] x · y ≡ 1r) → x # 0r
+  IsInv→#0' x (y , xy≡1) = IsInv→#0 x y xy≡1
+
 unquoteDecl IsHeytingFieldIsoΣ = declareRecordIsoΣ IsHeytingFieldIsoΣ (quote IsHeytingField)
 
 record HeytingFieldStr (ℓ' : Level) (R : Type ℓ) : Type (ℓ-max ℓ (ℓ-suc ℓ')) where

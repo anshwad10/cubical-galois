@@ -7,6 +7,10 @@ open import Cubical.Foundations.Function
 open import Cubical.Foundations.Powerset using (ℙ; _∈_)
 open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.Structure
+open import Cubical.Data.Sum as ⊎
+open import Cubical.Data.Nat as ℕ using (ℕ) hiding (module ℕ)
+open import Cubical.Data.FinData using (FinVec; Fin; ¬Fin0; zero; suc; one)
+open import Cubical.HITs.PropositionalTruncation as PT
 
 open import Cubical.Functions.Embedding
 
@@ -17,6 +21,7 @@ open import Cubical.Data.Sigma
 open import Cubical.Tactics.CommRingSolver
 
 open import Cubical.Algebra.Ring
+open import Cubical.Algebra.Ring.BigOps using (module Sum)
 open import Cubical.Algebra.CommRing
 open import Cubical.Algebra.CommRing.LocalRing
 
@@ -28,7 +33,12 @@ private variable
 
 module FieldTheory ((R , F) : HeytingField ℓ ℓ') where
   open HeytingFieldStr F public
+  open Sum (HeytingField→Ring (R , F))
   FCRing = HeytingField→CommRing (R , F)
+  open CommRingTheory FCRing public
+  FRing = HeytingField→Ring (R , F)
+  open RingTheory FRing public
+  open Units FCRing
 
   private variable
     x y : R
@@ -38,6 +48,9 @@ module FieldTheory ((R , F) : HeytingField ℓ ℓ') where
 
   contrapos#→≡ : ∀ x y z w → (x # y → z # w) → z ≡ w → x ≡ y
   contrapos#→≡ x y z w x#y→z#w z≡w = isTight x y λ x#y → is-irrefl w $ subst (_# w) z≡w (x#y→z#w x#y)
+
+  FieldIsNonTrivial : ¬ (1r ≡ 0r)
+  FieldIsNonTrivial p = is-irrefl 0r (subst (_# 0r) p (IsInv→#0 1r 1r (·IdR 1r)))
 
   +Respect#ₗ : ∀ x y z → x # y → (z + x) # (z + y)
   +Respect#ₗ x y z x#y = subst2 _#_ (+Comm _ _) (+Comm _ _) (+Respect#ᵣ x y z x#y)
@@ -54,7 +67,7 @@ module FieldTheory ((R , F) : HeytingField ℓ ℓ') where
 
   ·Respect#ᵣ : ∀ x y z → z # 0r → x # y → (x · z) # (y · z)
   ·Respect#ᵣ x y z z#0 x#y = DiffIsInv→# _ _ $ subst (_∈ (FCRing ˣ)) (solve! FCRing) $
-    Units.RˣMultClosed FCRing _ _ ⦃ #→DiffIsInv _ _ x#y ⦄ ⦃ #0→IsInv _ z#0 ⦄
+    RˣMultClosed _ _ ⦃ #→DiffIsInv _ _ x#y ⦄ ⦃ #0→IsInv _ z#0 ⦄
 
   ·Respect#ₗ : ∀ x y z → z # 0r → x # y → (z · x) # (z · y)
   ·Respect#ₗ x y z z#0 x#y = subst2 _#_ (·Comm _ _) (·Comm _ _) (·Respect#ᵣ x y z z#0 x#y)
@@ -68,18 +81,44 @@ module FieldTheory ((R , F) : HeytingField ℓ ℓ') where
   recipRespect# : ∀ z (z#0 : z # 0r) → recip z z#0 # 0r
   recipRespect# z z#0 = IsInv→#0 _ z (isLInvRecip z z#0)
 
-  ·Cancel#ᵣ : ∀ x y z → z # 0r → (x · z) # (y · z) → x # y
-  ·Cancel#ᵣ x y z z#0 xz#yz = subst2 _#_ (lem x) (lem y) (·Respect#ᵣ _ _ (recip z z#0) (recipRespect# z z#0) xz#yz)
-    where lem = λ (a : R) → sym (·Assoc a z (recip z z#0)) ∙∙ congR _·_ (isRInvRecip z z#0) ∙∙ ·IdR a
+  ·Cancel#ᵣ : ∀ x y z → (x · z) # (y · z) → x # y
+  ·Cancel#ᵣ x y z xz#yz with #→DiffIsInv _ _ xz#yz 
+  ... | (xz-yz⁻¹ , p) = DiffIsInv→# _ _ (z · xz-yz⁻¹ , solve! FCRing ∙ p)
   
-  ·Cancel#ₗ : ∀ x y z → z # 0r → (z · x) # (z · y) → x # y
-  ·Cancel#ₗ x y z z#0 zx#zy = ·Cancel#ᵣ x y z z#0 (subst2 _#_ (·Comm _ _) (·Comm _ _) zx#zy)
+  ·Cancel#ₗ : ∀ x y z → (z · x) # (z · y) → x # y
+  ·Cancel#ₗ x y z zx#zy = ·Cancel#ᵣ x y z (subst2 _#_ (·Comm _ _) (·Comm _ _) zx#zy)
 
   ·Cancelᵣ : ∀ x y z → z # 0r → x · z ≡ y · z → x ≡ y
   ·Cancelᵣ x y z z#0 = contrapos#→≡ _ _ _ _ (·Respect#ᵣ x y z z#0)
 
   ·Cancelₗ : ∀ x y z → z # 0r → z · x ≡ z · y → x ≡ y
   ·Cancelₗ x y z z#0 = contrapos#→≡ _ _ _ _ (·Respect#ₗ x y z z#0)
+
+  recip-eq-elim : ∀ x y z z#0 → x ≡ z · y → x · recip z z#0 ≡ y
+  recip-eq-elim x y z z#0 x≡zy = congL _·_ (x≡zy ∙ ·Comm z y) ∙ sym (·Assoc _ _ _) ∙ congR _·_ (isRInvRecip z z#0) ∙ ·IdR y
+
+  recip≡ : ∀ x y x#0 → x · y ≡ 1r → recip x x#0 ≡ y
+  recip≡ x y x#0 xy≡1 = cong fst (inverseUniqueness x (#0→IsInv x x#0) (y , xy≡1))
+
+  recip-1 : ∀ 1#0 → recip 1r 1#0 ≡ 1r
+  recip-1 1#0 = recip≡ _ _ _ (·IdR 1r)
+
+  cross-multiply : ∀ x y z w z#0 w#0 → z · y ≡ w · x → x · recip z z#0 ≡ y · recip w w#0
+  cross-multiply x y z w z#0 w#0 zy≡wx = recip-eq-elim _ _ _ z#0 (sym (·Assoc _ _ _ ∙ recip-eq-elim _ _ _ w#0 zy≡wx))
+
+  FieldIs#BinSumLocal : ∀ x y → (x + y) # 0r → ∥ (x # 0r) ⊎ (y # 0r) ∥₁
+  FieldIs#BinSumLocal x y x+y#0 = PT.map (
+      ⊎.map (idfun _) λ -y#0 → is-sym _ _ (subst2 _#_ (+InvL y) (+IdL y) (+Respect#ᵣ _ _ y -y#0))
+    ) (is-cotrans x (- y) 0r (subst2 _#_ (solve! FCRing) (solve! FCRing) (+Respect#ᵣ _ _ (- y) x+y#0)))
+
+  FieldIsBinSumLocal : Characterizations.BinSum.BinSum FCRing
+  FieldIsBinSumLocal x y x+y⁻¹ = PT.map (⊎.map (#0→IsInv x) (#0→IsInv y)) (FieldIs#BinSumLocal x y (IsInv→#0' _ x+y⁻¹))
+
+  FieldIsLocal : isLocal FCRing
+  FieldIsLocal = Characterizations.BinSum.alternative→isLocal FCRing (FieldIsNonTrivial , FieldIsBinSumLocal)
+
+  FieldIs#Local : {n : ℕ} → (xs : FinVec R n) → (∑ xs) # 0r → ∃[ i ∈ Fin n ] (xs i # 0r)
+  FieldIs#Local xs ∑xs#0 = PT.map (map-snd (IsInv→#0' _)) (FieldIsLocal xs (#0→IsInv _ ∑xs#0))
 
 -- Any homomorphism of rings automatically preserves the apartness
 module _ ((A , F) : HeytingField ℓ ℓ'') ((B , G) : HeytingField ℓ' ℓ''')
