@@ -20,6 +20,9 @@ module _ {F : HeytingField ℓ ℓ'} (E : FieldExtension F ℓ'' ℓ''') where
   IsAlgebraicExtension : Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
   IsAlgebraicExtension = {!   !}
 
+  IsNormalExtension : Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
+  IsNormalExtension = {!   !}
+
   IsGaloisExtension : Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
   IsGaloisExtension = {!   !}
 

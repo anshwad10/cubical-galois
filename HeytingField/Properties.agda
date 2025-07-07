@@ -43,14 +43,17 @@ module FieldTheory ((R , F) : HeytingField ℓ ℓ') where
   private variable
     x y : R
 
+  #→≢ : ∀ x y → x # y → ¬ x ≡ y
+  #→≢ x y x#y x≡y = is-irrefl y $ subst (_# y) x≡y x#y
+
   FieldIsSeparated : Separated R
-  FieldIsSeparated x y ¬¬x≡y = isTight x y λ x#y → ¬¬x≡y λ x≡y → is-irrefl y $ subst (_# y) x≡y x#y
+  FieldIsSeparated x y ¬¬x≡y = isTight x y λ x#y → ¬¬x≡y $ #→≢ x y x#y
 
   contrapos#→≡ : ∀ x y z w → (x # y → z # w) → z ≡ w → x ≡ y
-  contrapos#→≡ x y z w x#y→z#w z≡w = isTight x y λ x#y → is-irrefl w $ subst (_# w) z≡w (x#y→z#w x#y)
+  contrapos#→≡ x y z w x#y→z#w z≡w = isTight x y λ x#y → #→≢ z w (x#y→z#w x#y) z≡w
 
-  FieldIsNonTrivial : ¬ (1r ≡ 0r)
-  FieldIsNonTrivial p = is-irrefl 0r (subst (_# 0r) p (IsInv→#0 1r 1r (·IdR 1r)))
+  FieldIsNonTrivial : 1r # 0r
+  FieldIsNonTrivial = IsInv→#0 1r 1r (·IdR 1r)
 
   +Respect#ₗ : ∀ x y z → x # y → (z + x) # (z + y)
   +Respect#ₗ x y z x#y = subst2 _#_ (+Comm _ _) (+Comm _ _) (+Respect#ᵣ x y z x#y)
@@ -115,7 +118,7 @@ module FieldTheory ((R , F) : HeytingField ℓ ℓ') where
   FieldIsBinSumLocal x y x+y⁻¹ = PT.map (⊎.map (#0→IsInv x) (#0→IsInv y)) (FieldIs#BinSumLocal x y (IsInv→#0' _ x+y⁻¹))
 
   FieldIsLocal : isLocal FCRing
-  FieldIsLocal = Characterizations.BinSum.alternative→isLocal FCRing (FieldIsNonTrivial , FieldIsBinSumLocal)
+  FieldIsLocal = Characterizations.BinSum.alternative→isLocal FCRing (#→≢ _ _ FieldIsNonTrivial , FieldIsBinSumLocal)
 
   FieldIs#Local : {n : ℕ} → (xs : FinVec R n) → (∑ xs) # 0r → ∃[ i ∈ Fin n ] (xs i # 0r)
   FieldIs#Local xs ∑xs#0 = PT.map (map-snd (IsInv→#0' _)) (FieldIsLocal xs (#0→IsInv _ ∑xs#0))
@@ -133,7 +136,7 @@ module _ ((A , F) : HeytingField ℓ ℓ'') ((B , G) : HeytingField ℓ' ℓ''')
     where open IsRingHom fIsRingHom
 
   FieldHomIsInj : ∀ x y → f x ≡ f y → x ≡ y
-  FieldHomIsInj x y fx≡fy = F.isTight _ _ λ x#y → G.is-irrefl (f y) (subst (G._# (f y)) fx≡fy (FieldHomPres# x y x#y))
+  FieldHomIsInj x y fx≡fy = F.isTight _ _ λ x#y → G.#→≢ (f x) (f y) (FieldHomPres# x y x#y) fx≡fy
 
   module _ (strongExt : ∀ x y → f x G.# f y → x F.# y) where
 
