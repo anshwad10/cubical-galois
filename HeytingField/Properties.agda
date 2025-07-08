@@ -212,3 +212,16 @@ compFieldHom : HeytingFieldHom F G → HeytingFieldHom G H → HeytingFieldHom F
 compFieldHom f g = _ , strongExtRingHomIsFieldHom _ _ _ 
   (compIsRingHom (HeytingFieldHom→RingHom _ _ g .snd) (HeytingFieldHom→RingHom _ _ f .snd)) λ x y x#y →
     invEq (f .snd .pres# _ _) (invEq (g .snd .pres# _ _) x#y)
+
+-- Discrete (Geometric) fields
+module _ (F : HeytingField ℓ ℓ') where
+  open FieldTheory F
+
+  isDiscField : Type _
+  isDiscField = ∀ x y → Dec (x # y)
+
+  -- The underlying set of a Geometric field is discrete
+  isDiscField→isDisc : isDiscField → Discrete ⟨ F ⟩
+  isDiscField→isDisc FDisc x y with FDisc x y
+  ... | yes x#y = no (#→≢ x y x#y)
+  ... | no ¬x#y = yes (isTight x y ¬x#y)
