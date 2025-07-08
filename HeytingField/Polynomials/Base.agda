@@ -7,10 +7,12 @@ open import Cubical.Foundations.Structure
 open import Cubical.Foundations.Function
 open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Powerset
+open import Cubical.Foundations.Isomorphism
 open import Cubical.Data.Nat as ℕ using (ℕ; zero; suc; separatedℕ)
 open import Cubical.Data.Nat.Order as ℕ
 open import Cubical.Data.Empty as ⊥
 open import Cubical.Data.Sigma
+open import Cubical.Data.Sum as ⊎
 open import Cubical.HITs.PropositionalTruncation as PT
 open import Cubical.Algebra.CommRing
 open import Cubical.Algebra.Algebra
@@ -47,7 +49,7 @@ module Deg where open OrderedCommMonoidStr (str Deg≤+) renaming (_·_ to _+_) 
 module FieldPoly (F : HeytingField ℓ-zero ℓ-zero) where
   open FieldTheory F
   open PolyModTheory FCRing
-  open PolyMod FCRing using (Poly→Prf; ElimProp) renaming (Poly→Fun to coefficent) 
+  open PolyMod FCRing using (Poly→Prf; ElimProp; isSetPoly) renaming (Poly→Fun to coefficent) 
   private
     FAlgebra = initialCAlg FCRing
     PAlgebra = ListPolyCommAlgebra FCRing
@@ -132,9 +134,18 @@ module FieldPoly (F : HeytingField ℓ-zero ℓ-zero) where
       lemma (lt n<m) _ = #→≢ _ _ (q .snd) (p .fst m n<m)
       lemma (eq n≡m) n≢m = n≢m n≡m
       lemma (gt n>m) _ = #→≢ _ _ (p .snd) (q .fst n n>m)
-  
+
   []hasNoDeg : ¬ hasDeg []
   []hasNoDeg (_ , _ , p) = is-irrefl 0r p
+
+  ∷sucDeg≤ : ∀ r P n → P hasDeg≤ n → (r ∷ P) hasDeg≤ suc n
+  ∷sucDeg≤ r = λ P n p m (k , k+ssn≡m) → lemma P n p k m (sym (ℕ.+-suc k (suc n) ∙ ℕ.+-suc (suc k) n) ∙ k+ssn≡m) where
+
+    lemma : ∀ P n (p : P hasDeg≤ n) k m → suc (suc k) ℕ.+ n ≡ m → coefficent (r ∷ P) m ≡ 0r
+    lemma P n p k = J> p _ (suc-≤-suc ≤SumRight)
+  
+  ∷sucDeg≡ : ∀ r P n → P hasDeg≡ n → (r ∷ P) hasDeg≡ suc n
+  ∷sucDeg≡ r P n (p , q) = ∷sucDeg≤ r P n p , q
   
   leadingCoeff : ∀ P → hasDeg P → ⟨ F ⟩
   leadingCoeff P (n , p) = coefficent P n
@@ -165,5 +176,27 @@ module FieldPoly (F : HeytingField ℓ-zero ℓ-zero) where
   hasDeg→factorMonic : ∀ P → hasDeg P → Σ[ a ∈ ⟨ F ⟩ ] isMonic (a PolyConst* P)
   hasDeg→factorMonic P (n , p) =
     recip _ (p .snd) , n , PolyConst*PresDeg _ P n (p .fst) , coefficentRespConst* _ P n ∙ isLInvRecip _ (p .snd)
+
+  -- In a discrete field, every polynomial is either zero (has -1 degree) or has a degree
+  module _ (FDisc : isDiscField F) where
+    isDisc→≡0⊎hasDeg : ∀ P → (P ≡ 0P) ⊎ hasDeg P
+    isDisc→≡0⊎hasDeg = ElimProp _ (inl refl) lemma (goalIsProp _) where
+    
+      goalIsProp : ∀ P → isProp ((P ≡ 0P) ⊎ hasDeg P)
+      goalIsProp P = isProp⊎ (isSetPoly _ _) (isPropHasDeg P) λ P≡0 → subst (λ P → ¬ hasDeg P) (sym P≡0) []hasNoDeg
+
+      lemma : ∀ r P → (P ≡ 0P) ⊎ hasDeg P → (r ∷ P ≡ 0P) ⊎ hasDeg (r ∷ P)
+      lemma r P (inl P≡0) with FDisc r 0r
+      ... | yes r#0 = inr (0 , (λ m (k , k+1≡m) → lemma1 k m (ℕ.+-comm 1 k ∙ k+1≡m)) , r#0) where
+
+        lemma1 : ∀ k m → suc k ≡ m → coefficent (r ∷ P) m ≡ 0r
+        lemma1 k = J> cong (λ P → coefficent P k) P≡0
+
+      ... | no ¬r#0 = inl (cong₂ _∷_ (isTight _ _ ¬r#0) P≡0 ∙ drop0)
+      lemma r P (inr (n , p)) = inr (suc n , ∷sucDeg≡ r P n p)
+    
+    -- The library doesn't have disjunctive syllogism defined yet
+    isDisc→≢0→hasDeg : ∀ P → ¬ P ≡ 0P → hasDeg P
+    isDisc→≢0→hasDeg P P≢0 = ⊎-IdL-⊥-Iso .Iso.fun (⊎.map P≢0 (idfun _) (isDisc→≡0⊎hasDeg P))
 
   module Division (f g : Poly FCRing) where
