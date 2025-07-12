@@ -39,7 +39,7 @@ record IsHeytingField {R : Type ℓ} (0r 1r : R) (_+_ _·_ : R → R → R) (-_ 
     +Respect#ᵣ : ∀ x y z → x # y → (x + z) # (y + z)
     #0→IsInv : ∀ x → x # 0r → Σ[ y ∈ R ] x · y ≡ 1r
     IsInv→#0 : ∀ x y → x · y ≡ 1r → x # 0r
-  
+
   open IsCommRing isCommRing public
   open IsApartness isApartness hiding (is-set) public
 
@@ -95,9 +95,9 @@ HeytingField→Apartness (R , H) = R , HeytingFieldStr→ApartnessStr H
 
 isPropIsHeytingField : (0r 1r : R) (_+_ _·_ : R → R → R) (-_ : R → R) (_#_ : R → R → Type ℓ')
                      → isProp (IsHeytingField 0r 1r _+_ _·_ -_ _#_)
-isPropIsHeytingField _ _ _ _ _ _ = isOfHLevelRetractFromIso 1 IsHeytingFieldIsoΣ $ 
+isPropIsHeytingField _ _ _ _ _ _ = isOfHLevelRetractFromIso 1 IsHeytingFieldIsoΣ $
   isPropΣ (isPropIsCommRing _ _ _ _ _) λ isCommRing → isPropΣ (isPropIsApartness _) λ isApartness →
-    isProp×3 (isPropΠ3 λ _ _ _ → isCommRing .is-set _ _) 
+    isProp×3 (isPropΠ3 λ _ _ _ → isCommRing .is-set _ _)
              (isPropΠ4 λ _ _ _ _ → isApartness .is-prop-valued _ _)
              (isPropΠ2 λ _ _ → Units.inverseUniqueness (_ , commringstr _ _ _ _ _ isCommRing) _)
              (isPropΠ3 λ _ _ _ → isApartness .is-prop-valued _ _)
@@ -105,7 +105,7 @@ isPropIsHeytingField _ _ _ _ _ _ = isOfHLevelRetractFromIso 1 IsHeytingFieldIso�
 
 record IsHeytingFieldHom {A : Type ℓ} {B : Type ℓ'} (R : HeytingFieldStr ℓ'' A) (f : A → B) (S : HeytingFieldStr ℓ''' B)
                   : Type (ℓ-max (ℓ-max ℓ ℓ'') (ℓ-max ℓ' ℓ''')) where
-  
+
   private
     module R = HeytingFieldStr R
     module S = HeytingFieldStr S
@@ -150,7 +150,7 @@ isSetHeytingFieldHom : (R : HeytingField ℓ ℓ'') (S : HeytingField ℓ' ℓ''
 isSetHeytingFieldHom R S = isSetΣSndProp (isSet→ is-set) λ f → isPropIsHeytingFieldHom _ f _
   where open HeytingFieldStr (str S)
 
-HeytingFieldHom→RingHom : (R : HeytingField ℓ ℓ'') (S : HeytingField ℓ' ℓ''') 
+HeytingFieldHom→RingHom : (R : HeytingField ℓ ℓ'') (S : HeytingField ℓ' ℓ''')
                         → HeytingFieldHom R S → RingHom (HeytingField→Ring R) (HeytingField→Ring S)
 HeytingFieldHom→RingHom R S (f , fIsHom) = f , isHeytingFieldHom→isRingHom _ f _ fIsHom
 
@@ -165,12 +165,12 @@ isSetHeytingFieldEquiv : (R : HeytingField ℓ ℓ'') (S : HeytingField ℓ' ℓ
 isSetHeytingFieldEquiv R S = isSetΣSndProp (isOfHLevel⁺≃ᵣ 1 is-set) λ (f , _) → isPropIsHeytingFieldHom _ f _
   where open HeytingFieldStr (str S)
 
-HeytingFieldEquiv→RingEquiv : (R : HeytingField ℓ ℓ'') (S : HeytingField ℓ' ℓ''') 
+HeytingFieldEquiv→RingEquiv : (R : HeytingField ℓ ℓ'') (S : HeytingField ℓ' ℓ''')
                             → HeytingFieldEquiv R S → RingEquiv (HeytingField→Ring R) (HeytingField→Ring S)
 HeytingFieldEquiv→RingEquiv R S (e , eIsHom) = e , isHeytingFieldHom→isRingHom _ _ _ eIsHom
 
 𝒮ᴰ-HeytingField : DUARel (𝒮-Univ ℓ) (HeytingFieldStr ℓ') (ℓ-max ℓ ℓ')
-𝒮ᴰ-HeytingField = 
+𝒮ᴰ-HeytingField =
   𝒮ᴰ-Record (𝒮-Univ _) IsHeytingFieldEquiv (fields:
     data[ 0r ∣ null ∣ pres0 ]
     data[ 1r ∣ null ∣ pres1 ]

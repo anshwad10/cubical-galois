@@ -85,9 +85,9 @@ module FieldTheory ((R , F) : HeytingField ℓ ℓ') where
   recipRespect# z z#0 = IsInv→#0 _ z (isLInvRecip z z#0)
 
   ·Cancel#ᵣ : ∀ x y z → (x · z) # (y · z) → x # y
-  ·Cancel#ᵣ x y z xz#yz with #→DiffIsInv _ _ xz#yz 
+  ·Cancel#ᵣ x y z xz#yz with #→DiffIsInv _ _ xz#yz
   ... | (xz-yz⁻¹ , p) = DiffIsInv→# _ _ (z · xz-yz⁻¹ , solve! FCRing ∙ p)
-  
+
   ·Cancel#ₗ : ∀ x y z → (z · x) # (z · y) → x # y
   ·Cancel#ₗ x y z zx#zy = ·Cancel#ᵣ x y z (subst2 _#_ (·Comm _ _) (·Comm _ _) zx#zy)
 
@@ -131,7 +131,7 @@ module _ ((A , F) : HeytingField ℓ ℓ'') ((B , G) : HeytingField ℓ' ℓ''')
     module G = FieldTheory (B , G)
 
   FieldHomPres# : ∀ x y → x F.# y → f x G.# f y
-  FieldHomPres# x y x#y = let (x-y⁻¹ , p) = F.#→DiffIsInv _ _ x#y in G.DiffIsInv→# _ _ $ 
+  FieldHomPres# x y x#y = let (x-y⁻¹ , p) = F.#→DiffIsInv _ _ x#y in G.DiffIsInv→# _ _ $
     f x-y⁻¹ , sym (pres· _ _ ∙∙ congL G._·_ (pres+ _ _) ∙∙ congL G._·_ (congR G._+_ (pres- _))) ∙∙ cong f p ∙∙ pres1
     where open IsRingHom fIsRingHom
 
@@ -157,10 +157,10 @@ module _ {A : Type ℓ} {B : Type ℓ'} {F : HeytingFieldStr ℓ'' A} {G : Heyti
   private
     module F = FieldTheory (A , F)
     module G = FieldTheory (B , G)
-  
+
   module _ (pres+ : ∀ x y → f (x F.+ y) ≡ f x G.+ f y) (pres1 : f F.1r ≡ G.1r)
            (pres· : ∀ x y → f (x F.· y) ≡ f x G.· f y) (strongExt : ∀ x y → f x G.# f y → x F.# y) where
-    
+
     makeIsFieldHom : IsHeytingFieldHom F f G
     makeIsFieldHom = strongExtRingHomIsFieldHom _ _ f (makeIsRingHom pres1 pres+ pres·) strongExt
 
@@ -168,10 +168,10 @@ module _ {F : HeytingField ℓ ℓ''} {G : HeytingField ℓ' ℓ'''} (f : ⟨ F 
   private
     module F = FieldTheory F
     module G = FieldTheory G
-  
+
   module _ (pres+ : ∀ x y → f (x F.+ y) ≡ f x G.+ f y) (pres1 : f F.1r ≡ G.1r)
            (pres· : ∀ x y → f (x F.· y) ≡ f x G.· f y) (strongExt : ∀ x y → f x G.# f y → x F.# y) where
-    
+
     makeFieldHom : HeytingFieldHom F G
     makeFieldHom = f , makeIsFieldHom pres+ pres1 pres· strongExt
 
@@ -186,7 +186,7 @@ module _ {A : Type ℓ} {B : Type ℓ'} {F : HeytingFieldStr ℓ'' A} (e : A ≃
   ringEquivIsStrongExt x y ex#ey = subst2 F._#_ (retEq e x) (retEq e y) $
     FieldHomPres# (B , G) (A , F) (invEq e) (isRingHomInv (e , eIsRingEquiv)) _ _ ex#ey
     where open RingEquivs
-  
+
   ringEquivIsFieldEquiv : IsHeytingFieldEquiv F e G
   ringEquivIsFieldEquiv = strongExtRingHomIsFieldHom _ _ _ eIsRingEquiv ringEquivIsStrongExt
 
@@ -195,7 +195,7 @@ module _ {F : HeytingField ℓ ℓ''} {G : HeytingField ℓ' ℓ'''} where
   RingEquiv→FieldEquiv (e , eIsHom) = e , ringEquivIsFieldEquiv e eIsHom
 
   FieldEquiv≃RingEquiv : HeytingFieldEquiv F G ≃ RingEquiv (HeytingField→Ring F) (HeytingField→Ring G)
-  FieldEquiv≃RingEquiv = Σ-cong-equiv-snd λ e → 
+  FieldEquiv≃RingEquiv = Σ-cong-equiv-snd λ e →
     propBiimpl→Equiv (isPropIsHeytingFieldHom _ _ _) (isPropIsRingHom _ _ _)
                      (isHeytingFieldHom→isRingHom _ _ _) (ringEquivIsFieldEquiv e)
 
@@ -209,7 +209,7 @@ idFieldHom : HeytingFieldHom F F
 idFieldHom = _ , strongExtRingHomIsFieldHom _ _ _ (idRingHom _ .snd) λ _ _ → idfun _
 
 compFieldHom : HeytingFieldHom F G → HeytingFieldHom G H → HeytingFieldHom F H
-compFieldHom f g = _ , strongExtRingHomIsFieldHom _ _ _ 
+compFieldHom f g = _ , strongExtRingHomIsFieldHom _ _ _
   (compIsRingHom (HeytingFieldHom→RingHom _ _ g .snd) (HeytingFieldHom→RingHom _ _ f .snd)) λ x y x#y →
     invEq (f .snd .pres# _ _) (invEq (g .snd .pres# _ _) x#y)
 
