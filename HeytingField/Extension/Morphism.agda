@@ -1,16 +1,16 @@
-{-# OPTIONS --allow-unsolved-metas #-}
+{-# OPTIONS --safe #-}
 
 module HeytingField.Extension.Morphism where
 
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Structure
+open import Cubical.Foundations.Equiv.Base
 
 open import Cubical.Algebra.Group
 
 open import HeytingField.Base
 
 open import HeytingField.Extension.Base
-open import HeytingField.Extension.Galois
 
 private variable
   ℓ ℓ' ℓ'' ℓ''' ℓ'''' ℓ''''' : Level
@@ -30,27 +30,27 @@ module _ (F : HeytingField ℓ ℓ') ((E , F→E , F→EisHom) : FieldExtension 
   ExtensionEquiv : Type (ℓ-max (ℓ-max (ℓ-max (ℓ-max ℓ ℓ'') ℓ''') ℓ'''') ℓ''''')
   ExtensionEquiv = Σ[ f ∈ HeytingFieldEquiv E E' ] IsExtensionHom (f .fst .fst , f .snd)
 
-idExtensionEquiv : ExtensionEquiv F E E
-idExtensionEquiv = {!   !}
+open IsExtensionHom
 
-compExtensionEquiv : ExtensionEquiv F E E' → ExtensionEquiv F E' E'' → ExtensionEquiv F E E''
-compExtensionEquiv f g = {!   !}
+-- idExtensionEquiv : ExtensionEquiv F E E
+-- idExtensionEquiv .fst .fst = {! idEquiv  !}
+-- idExtensionEquiv .fst .snd = {!   !}
+-- idExtensionEquiv .snd = {!   !}
 
-invExtensionEquiv : ExtensionEquiv F E E' → ExtensionEquiv F E' E
-invExtensionEquiv f = {!   !}
+-- compExtensionEquiv : ExtensionEquiv F E E' → ExtensionEquiv F E' E'' → ExtensionEquiv F E E''
+-- compExtensionEquiv f g = {!   !}
+
+-- invExtensionEquiv : ExtensionEquiv F E E' → ExtensionEquiv F E' E
+-- invExtensionEquiv f = {!   !}
 
 ExtensionSym : (F : HeytingField ℓ ℓ') (E : FieldExtension F ℓ'' ℓ''')
              → Type (ℓ-max (ℓ-max ℓ ℓ'') ℓ''')
 ExtensionSym F E = ExtensionEquiv F E E
 
-ExtensionSymGroupStr : (F : HeytingField ℓ ℓ') (E : FieldExtension F ℓ'' ℓ''')
-                     → GroupStr (ExtensionSym F E)
-ExtensionSymGroupStr F E = groupstr idExtensionEquiv compExtensionEquiv invExtensionEquiv {!   !}
+-- ExtensionSymGroupStr : (F : HeytingField ℓ ℓ') (E : FieldExtension F ℓ'' ℓ''')
+--                      → GroupStr (ExtensionSym F E)
+-- ExtensionSymGroupStr F E = groupstr idExtensionEquiv compExtensionEquiv invExtensionEquiv {!   !}
 
-ExtensionSymGroup : (F : HeytingField ℓ ℓ') (E : FieldExtension F ℓ'' ℓ''')
-                  → Group (ℓ-max (ℓ-max ℓ ℓ'') ℓ''')
-ExtensionSymGroup F E = _ , ExtensionSymGroupStr F E
-
-GaloisGroup : (F : HeytingField ℓ ℓ') (E : GaloisExtension F ℓ'' ℓ''')
-            → Group (ℓ-max (ℓ-max ℓ ℓ'') ℓ''')
-GaloisGroup F E = ExtensionSymGroup F (GaloisExtension→Extension E)
+-- ExtensionSymGroup : (F : HeytingField ℓ ℓ') (E : FieldExtension F ℓ'' ℓ''')
+--                   → Group (ℓ-max (ℓ-max ℓ ℓ'') ℓ''')
+-- ExtensionSymGroup F E = _ , ExtensionSymGroupStr F E

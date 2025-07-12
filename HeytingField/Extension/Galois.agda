@@ -8,6 +8,7 @@ open import HeytingField.Base
 open import HeytingField.Properties
 
 open import HeytingField.Extension.Base
+open import HeytingField.Extension.Morphism
 
 private variable
   ℓ ℓ' ℓ'' ℓ''' : Level
@@ -37,3 +38,7 @@ GaloisExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ] Σ[ F→E
 
 GaloisExtension→Extension : GaloisExtension F ℓ'' ℓ''' → FieldExtension F ℓ'' ℓ'''
 GaloisExtension→Extension (E , F→E , _) = (E , F→E)
+
+GaloisGroup : (F : HeytingField ℓ ℓ') (E : GaloisExtension F ℓ'' ℓ''')
+            → Group (ℓ-max (ℓ-max ℓ ℓ'') ℓ''')
+GaloisGroup F E = ExtensionSymGroup F (GaloisExtension→Extension E)

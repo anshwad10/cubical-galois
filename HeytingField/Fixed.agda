@@ -1,4 +1,4 @@
-{-# OPTIONS --allow-unsolved-metas #-}
+{-# OPTIONS --safe #-}
 
 module HeytingField.Fixed where
 
@@ -11,7 +11,9 @@ open import Cubical.Algebra.Group
 open import Cubical.Algebra.Group.Subgroup
 
 open import HeytingField.Base
-open import HeytingField.Extensions
+open import HeytingField.Extension.Base
+open import HeytingField.Extension.Morphism
+open import HeytingField.Extension.Subextension
 open import HeytingField.Properties
 open import HeytingField.Subfield
 
@@ -57,25 +59,25 @@ module OfAutomorphism (((e , eIsHom) , eIsFHom) : ExtensionSym F (E , F→E)) wh
   FixedField : HeytingField _ _
   FixedField = getSubfield E FixedSubfield
 
-module OfSubgroup (S : Subgroup (ExtensionSymGroup F (E , F→E))) where
+-- module OfSubgroup (S : Subgroup (ExtensionSymGroup F (E , F→E))) where
 
-  Fixed : ⟨ E ⟩ → Type _
-  Fixed x = (e : ExtensionSym F (E , F→E)) → e ∈ ⟪ S ⟫ → OfAutomorphism.Fixed e x
+--   Fixed : ⟨ E ⟩ → Type _
+--   Fixed x = (e : ExtensionSym F (E , F→E)) → e ∈ ⟪ S ⟫ → OfAutomorphism.Fixed e x
 
-  open isSubextension
-  open isSubfield
+--   open isSubextension
+--   open isSubfield
 
-  isSubextensionFixed : isSubextension F (E , F→E) Fixed
-  isSubextensionFixed = isSubextensionIntersection λ e → isSubextensionIntersection λ _ → OfAutomorphism.isSubextensionFixed e
+--   isSubextensionFixed : isSubextension F (E , F→E) Fixed
+--   isSubextensionFixed = isSubextensionIntersection λ e → isSubextensionIntersection λ _ → OfAutomorphism.isSubextensionFixed e
 
-  FixedSubextension : Subextension F (E , F→E) _
-  FixedSubextension = Fixed , isSubextensionFixed
+--   FixedSubextension : Subextension F (E , F→E) _
+--   FixedSubextension = Fixed , isSubextensionFixed
 
-  FixedSubfield : Subfield E _
-  FixedSubfield = Fixed , isSubextensionFixed .is-subfield
+--   FixedSubfield : Subfield E _
+--   FixedSubfield = Fixed , isSubextensionFixed .is-subfield
 
-  FixedExtension : FieldExtension F _ _
-  FixedExtension = getSubextension F (E , F→E) FixedSubextension
+--   FixedExtension : FieldExtension F _ _
+--   FixedExtension = getSubextension F (E , F→E) FixedSubextension
 
-  FixedField : HeytingField _ _
-  FixedField = getSubfield E FixedSubfield
+--   FixedField : HeytingField _ _
+--   FixedField = getSubfield E FixedSubfield
