@@ -202,6 +202,9 @@ module _ {F : HeytingField ℓ ℓ''} {G : HeytingField ℓ' ℓ'''} where
   isEquivHeytingFieldEquiv→RingEquiv : isEquiv (HeytingFieldEquiv→RingEquiv F G)
   isEquivHeytingFieldEquiv→RingEquiv = FieldEquiv≃RingEquiv .snd
 
+  FieldEquiv≡ : {f g : HeytingFieldEquiv F G} → f .fst .fst ≡ g .fst .fst → f ≡ g
+  FieldEquiv≡ = Σ≡Prop (λ _ → isPropIsHeytingFieldHom _ _ _) ∘ Σ≡Prop (λ _ → isPropIsEquiv _)
+
 open RingHoms
 open IsHeytingFieldHom
 
@@ -212,6 +215,18 @@ compFieldHom : HeytingFieldHom F G → HeytingFieldHom G H → HeytingFieldHom F
 compFieldHom f g = _ , strongExtRingHomIsFieldHom _ _ _
   (compIsRingHom (HeytingFieldHom→RingHom _ _ g .snd) (HeytingFieldHom→RingHom _ _ f .snd)) λ x y x#y →
     invEq (f .snd .pres# _ _) (invEq (g .snd .pres# _ _) x#y)
+
+open RingEquivs
+
+idFieldEquiv : HeytingFieldEquiv F F
+idFieldEquiv = RingEquiv→FieldEquiv (idRingEquiv _)
+
+compFieldEquiv : HeytingFieldEquiv F G → HeytingFieldEquiv G H → HeytingFieldEquiv F H
+compFieldEquiv f g = RingEquiv→FieldEquiv $ compRingEquiv
+  (HeytingFieldEquiv→RingEquiv _ _ f) (HeytingFieldEquiv→RingEquiv _ _ g)
+
+invFieldEquiv : HeytingFieldEquiv F G → HeytingFieldEquiv G F
+invFieldEquiv f = RingEquiv→FieldEquiv (invRingEquiv (HeytingFieldEquiv→RingEquiv _ _ f))
 
 -- Discrete (Geometric) fields
 module _ (F : HeytingField ℓ ℓ') where
