@@ -130,16 +130,15 @@ module _ ((A , F) : HeytingField ℓ ℓ'') ((B , G) : HeytingField ℓ' ℓ''')
     module F = FieldTheory (A , F)
     module G = FieldTheory (B , G)
 
-  FieldHomPres# : ∀ x y → x F.# y → f x G.# f y
-  FieldHomPres# x y x#y = let (x-y⁻¹ , p) = F.#→DiffIsInv _ _ x#y in G.DiffIsInv→# _ _ $
+  RingHomOfFieldsPres# : ∀ x y → x F.# y → f x G.# f y
+  RingHomOfFieldsPres# x y x#y = let (x-y⁻¹ , p) = F.#→DiffIsInv _ _ x#y in G.DiffIsInv→# _ _ $
     f x-y⁻¹ , sym (pres· _ _ ∙∙ congL G._·_ (pres+ _ _) ∙∙ congL G._·_ (congR G._+_ (pres- _))) ∙∙ cong f p ∙∙ pres1
     where open IsRingHom fIsRingHom
 
-  FieldHomIsInj : ∀ x y → f x ≡ f y → x ≡ y
-  FieldHomIsInj x y fx≡fy = F.isTight _ _ λ x#y → G.#→≢ (f x) (f y) (FieldHomPres# x y x#y) fx≡fy
+  RingHomOfFieldsIsInj : ∀ x y → f x ≡ f y → x ≡ y
+  RingHomOfFieldsIsInj x y fx≡fy = F.isTight _ _ λ x#y → G.#→≢ (f x) (f y) (RingHomOfFieldsPres# x y x#y) fx≡fy
 
   module _ (strongExt : ∀ x y → f x G.# f y → x F.# y) where
-
     open IsHeytingFieldHom
     open IsRingHom
 
@@ -150,7 +149,11 @@ module _ ((A , F) : HeytingField ℓ ℓ'') ((B , G) : HeytingField ℓ' ℓ''')
       .pres+ → fIsRingHom .pres+
       .pres· → fIsRingHom .pres·
       .pres- → fIsRingHom .pres-
-      .pres# x y → propBiimpl→Equiv (F.is-prop-valued _ _) (G.is-prop-valued _ _) (FieldHomPres# x y) (strongExt x y)
+      .pres# x y → propBiimpl→Equiv (F.is-prop-valued _ _) (G.is-prop-valued _ _) (RingHomOfFieldsPres# x y) (strongExt x y)
+
+module _ {F : HeytingField ℓ ℓ''} {G : HeytingField ℓ' ℓ'''} (f : HeytingFieldHom F G) where
+  FieldHomIsInj : ∀ x y → f .fst x ≡ f .fst y → x ≡ y
+  FieldHomIsInj = RingHomOfFieldsIsInj F G (f .fst) (isHeytingFieldHom→isRingHom (F .snd) _ (G .snd) (f .snd))
 
 -- We can make a smart constructor for field homomorphisms, as they are just strongly extensional ring homomorphisms
 module _ {A : Type ℓ} {B : Type ℓ'} {F : HeytingFieldStr ℓ'' A} {G : HeytingFieldStr ℓ''' B} {f : A → B} where
@@ -184,7 +187,7 @@ module _ {A : Type ℓ} {B : Type ℓ'} {F : HeytingFieldStr ℓ'' A} (e : A ≃
 
   ringEquivIsStrongExt : ∀ x y → e .fst x G.# e .fst y → x F.# y
   ringEquivIsStrongExt x y ex#ey = subst2 F._#_ (retEq e x) (retEq e y) $
-    FieldHomPres# (B , G) (A , F) (invEq e) (isRingHomInv (e , eIsRingEquiv)) _ _ ex#ey
+    RingHomOfFieldsPres# (B , G) (A , F) (invEq e) (isRingHomInv (e , eIsRingEquiv)) _ _ ex#ey
     where open RingEquivs
 
   ringEquivIsFieldEquiv : IsHeytingFieldEquiv F e G

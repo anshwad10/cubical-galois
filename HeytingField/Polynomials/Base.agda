@@ -50,7 +50,7 @@ module FieldPoly (F : HeytingField ℓ ℓ') where
     m : ℕ
 
   module Evaluation (Ext@(E , F→E) : FieldExtension F ℓ'' ℓ''') where
-    module E = FieldTheory E
+    private module E = FieldTheory E
     
     evaluateAlgebraHom : ⟨ E ⟩ → CommAlgebraHom PAlgebra (FieldExtension→CommAlg F Ext)
     evaluateAlgebraHom = inducedHom FCRing _

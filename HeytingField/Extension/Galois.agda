@@ -3,42 +3,45 @@
 module HeytingField.Extension.Galois where
 
 open import Cubical.Foundations.Prelude
+open import Cubical.Algebra.Group
+open import Cubical.Data.Sigma
 
 open import HeytingField.Base
 open import HeytingField.Properties
 
 open import HeytingField.Extension.Base
+open import HeytingField.Extension.Algebraic
 open import HeytingField.Extension.Morphism
 
 private variable
   ℓ ℓ' ℓ'' ℓ''' : Level
   F : HeytingField ℓ ℓ'
 
-module _ {F : HeytingField ℓ ℓ'} (E : FieldExtension F ℓ'' ℓ''') where
-  IsSeparableExtension : Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
-  IsSeparableExtension = {!   !}
+module _ (F : HeytingField ℓ ℓ') (E : FieldExtension F ℓ'' ℓ''') where
+  isSeparableExtension : Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
+  isSeparableExtension = {!!}
 
-  IsAlgebraicExtension : Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
-  IsAlgebraicExtension = {!   !}
+  isNormalExtension : Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
+  isNormalExtension = {!   !}
 
-  IsNormalExtension : Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
-  IsNormalExtension = {!   !}
+  isAlgebraicExtension : Type (ℓ-max ℓ ℓ'')
+  isAlgebraicExtension = Algebraic.isAlgebraicExt F E
 
-  IsGaloisExtension : Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
-  IsGaloisExtension = {!   !}
+  isGaloisExtension : Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
+  isGaloisExtension =  isSeparableExtension × isNormalExtension × isAlgebraicExtension
 
 SeparableExtension : ∀ (F : HeytingField ℓ ℓ') ℓ'' ℓ''' → Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
-SeparableExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ] Σ[ F→E ∈ HeytingFieldHom F E ] IsSeparableExtension (E , F→E)
+SeparableExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ] Σ[ F→E ∈ HeytingFieldHom F E ] isSeparableExtension F (E , F→E)
 
 AlgebraicExtension : ∀ (F : HeytingField ℓ ℓ') ℓ'' ℓ''' → Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
-AlgebraicExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ] Σ[ F→E ∈ HeytingFieldHom F E ] IsAlgebraicExtension (E , F→E)
+AlgebraicExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ] Σ[ F→E ∈ HeytingFieldHom F E ] isAlgebraicExtension F (E , F→E)
 
 GaloisExtension : ∀ (F : HeytingField ℓ ℓ') ℓ'' ℓ''' → Type (ℓ-max (ℓ-max (ℓ-max ℓ ℓ') (ℓ-suc ℓ'')) (ℓ-suc ℓ'''))
-GaloisExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ] Σ[ F→E ∈ HeytingFieldHom F E ] IsGaloisExtension (E , F→E)
+GaloisExtension F ℓ'' ℓ''' = Σ[ E ∈ HeytingField ℓ'' ℓ''' ] Σ[ F→E ∈ HeytingFieldHom F E ] isGaloisExtension F (E , F→E)
 
 GaloisExtension→Extension : GaloisExtension F ℓ'' ℓ''' → FieldExtension F ℓ'' ℓ'''
 GaloisExtension→Extension (E , F→E , _) = (E , F→E)
 
-GaloisGroup : (F : HeytingField ℓ ℓ') (E : GaloisExtension F ℓ'' ℓ''')
-            → Group (ℓ-max (ℓ-max ℓ ℓ'') ℓ''')
-GaloisGroup F E = ExtensionSymGroup F (GaloisExtension→Extension E)
+GaloisGroup : (F : HeytingField ℓ ℓ') (E : GaloisExtension F (ℓ-max ℓ ℓ'') ℓ'')
+            → Group (ℓ-max ℓ ℓ'')
+GaloisGroup F E = ExtensionAutGroup F (GaloisExtension→Extension E)
