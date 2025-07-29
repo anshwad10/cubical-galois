@@ -71,7 +71,7 @@ module _ (F : HeytingField ℓ ℓ') where
           F.·Comm _ _ ∙ sym (Qℤ→FPres· c (ℕ₊₁→ℤ b)) ∙ cong Qℤ→F (sym a/b~c/d) ∙ Qℤ→FPres· a (ℕ₊₁→ℤ d) ∙ F.·Comm _ _
 
     ℚ→FCommRingHom : CommRingHom ℚCommRing (HeytingField→CommRing F)
-    ℚ→FCommRingHom = ℚ→F , makeIsRingHom
+    ℚ→FCommRingHom = ℚ→F , makeIsCommRingHom
       (cong₂ F._·_ (ℤ→FIsHom .pres1) (F.recip≡ _ _ _ (F.·IdR _ ∙ ℤ→FIsHom .pres1)) ∙ F.·IdR _) (
       SQ.elimProp2 (λ _ _ → F.is-set _ _) λ (a , b) (c , d) →
         {!   !}

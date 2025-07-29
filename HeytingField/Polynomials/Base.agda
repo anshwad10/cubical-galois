@@ -18,8 +18,7 @@ open import Cubical.HITs.PropositionalTruncation as PT
 open import Cubical.Algebra.Ring
 open import Cubical.Algebra.CommRing
 open import Cubical.Algebra.Algebra
-open import Cubical.Algebra.CommAlgebra
-open import Cubical.Algebra.CommAlgebra.Instances.Initial
+open import Cubical.Algebra.CommAlgebra.AsModule
 open import Cubical.Algebra.Polynomials.UnivariateList.Base
 open import Cubical.Algebra.Polynomials.UnivariateList.Properties
 open import Cubical.Algebra.Polynomials.UnivariateList.UniversalProperty

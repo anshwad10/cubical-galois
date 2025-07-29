@@ -15,14 +15,14 @@ private variable
 
 module _ (F : HeytingField ℓ ℓ') (E : GaloisExtension F (ℓ-max ℓ ℓ'') ℓ'') where
   private
-    G : Group ?
+    G : Group (ℓ-max ℓ ℓ'')
     G = GaloisGroup F E
 
-    theMap : Subgroup G → Subextension F (GaloisExtension→Extension E) ?
-    theMap = OfSubgroup.FixedSubextension
+    -- theMap : Subgroup G → Subextension F (GaloisExtension→Extension E) ?
+    -- theMap = OfSubgroup.FixedSubextension
 
-    goalType : Type ?
-    goalType = isEquiv theMap
+    goalType : Type {!!}
+    goalType = {!isEquiv theMap!}
 
   theTheorem : goalType
   theTheorem = {!   !}
