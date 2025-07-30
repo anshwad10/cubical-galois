@@ -18,11 +18,11 @@ module _ (F : HeytingField ℓ ℓ') (E : GaloisExtension F (ℓ-max ℓ ℓ'') 
     G : Group (ℓ-max ℓ ℓ'')
     G = GaloisGroup F E
 
-    -- theMap : Subgroup G → Subextension F (GaloisExtension→Extension E) ?
-    -- theMap = OfSubgroup.FixedSubextension
+    theMap : Subgroup G → Subextension F (GaloisExtension→Extension E) (ℓ-max ℓ ℓ'')
+    theMap = {!OfSubgroup.FixedSubextension {F = F} {E = E .fst} {F→E = E .snd .fst}!}
 
-    goalType : Type {!!}
-    goalType = {!isEquiv theMap!}
+    goalType : Type (ℓ-max (ℓ-max (ℓ-suc ℓ) ℓ') (ℓ-suc ℓ''))
+    goalType = isEquiv theMap
 
   theTheorem : goalType
   theTheorem = {!   !}
