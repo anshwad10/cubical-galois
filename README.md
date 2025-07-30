@@ -1,7 +1,7 @@
 # cubical-galois
 A Constructive Formalization of Galois theory using the Cubical Agda proof assistant
 
-Typechecks with the latest version of [the Cubical Agda standard library](https://github.com/agda/cubical) (version 0.8), and Agda version 2.8.0
+Typechecks with the [the Cubical Agda standard library](https://github.com/agda/cubical) version 0.8 (specifically the latest commit [1f2af52](https://github.com/agda/cubical/commit/1f2af52701945bef003a525f78fa41aeadb7c6ae)), and [Agda version 2.8.0](https://agda.readthedocs.io/en/stable/getting-started/what-is-agda.html).
 
 This is for my IB Personal Project.
 
